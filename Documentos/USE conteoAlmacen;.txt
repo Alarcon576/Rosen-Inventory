@@ -1,0 +1,64 @@
+USE conteoAlmacen;
+GO
+
+SET NOCOUNT ON;
+
+-- ============================================================
+-- 1) BORRAR TABLAS HIJAS (Detalles, Faltantes, Conflictos)
+-- Orden: Primero las tablas _Espejo y _Borrado, luego las activas.
+-- ============================================================
+
+-- A) Faltantes de Inventario
+IF OBJECT_ID('dbo.DetalleInventario_Faltante_Espejo','U') IS NOT NULL DELETE FROM dbo.DetalleInventario_Faltante_Espejo;
+IF OBJECT_ID('dbo.DetalleInventario_Faltante_Borrado','U') IS NOT NULL DELETE FROM dbo.DetalleInventario_Faltante_Borrado;
+IF OBJECT_ID('dbo.DetalleInventario_Faltante','U') IS NOT NULL DELETE FROM dbo.DetalleInventario_Faltante;
+
+-- B) Conflictos de Conteo
+IF OBJECT_ID('dbo.DetalleConteo_Conflictos_Espejo','U') IS NOT NULL DELETE FROM dbo.DetalleConteo_Conflictos_Espejo;
+IF OBJECT_ID('dbo.DetalleConteo_Conflictos_Borrado','U') IS NOT NULL DELETE FROM dbo.DetalleConteo_Conflictos_Borrado;
+IF OBJECT_ID('dbo.DetalleConteo_Conflictos','U') IS NOT NULL DELETE FROM dbo.DetalleConteo_Conflictos;
+
+-- C) Detalles de Conteo estándar
+IF OBJECT_ID('dbo.DetalleConteo_Espejo','U') IS NOT NULL DELETE FROM dbo.DetalleConteo_Espejo;
+IF OBJECT_ID('dbo.DetalleConteo_Borrado','U') IS NOT NULL DELETE FROM dbo.DetalleConteo_Borrado;
+IF OBJECT_ID('dbo.DetalleConteo','U') IS NOT NULL DELETE FROM dbo.DetalleConteo;
+
+
+-- ============================================================
+-- 2) BORRAR TABLAS PADRES (Encabezados de Conteo)
+-- ============================================================
+IF OBJECT_ID('dbo.Conteo_Espejo','U') IS NOT NULL DELETE FROM dbo.Conteo_Espejo;
+IF OBJECT_ID('dbo.Conteo_Borrado','U') IS NOT NULL DELETE FROM dbo.Conteo_Borrado;
+IF OBJECT_ID('dbo.Conteo','U') IS NOT NULL DELETE FROM dbo.Conteo;
+
+
+-- ============================================================
+-- 3) MAESTROS (NO SE BORRAN)
+-- Se conservan: Inventario, Productos, Usuarios, Roles y Estados.
+-- ============================================================
+-- IF OBJECT_ID('dbo.Inventario','U') IS NOT NULL DELETE FROM dbo.Inventario; -- (Comentado para no borrar)
+
+
+-- ============================================================
+-- 4) REINICIAR CONTADORES (IDENTITY) A 0
+-- Para que los nuevos IDs empiecen desde 1.
+-- NOTA: Inventario no usa IDENTITY, por eso no está en esta lista.
+-- ============================================================
+DBCC CHECKIDENT ('dbo.DetalleInventario_Faltante', RESEED, 0);
+DBCC CHECKIDENT ('dbo.DetalleConteo_Conflictos', RESEED, 0);
+DBCC CHECKIDENT ('dbo.DetalleConteo', RESEED, 0);
+DBCC CHECKIDENT ('dbo.Conteo', RESEED, 0);
+
+
+-- ============================================================
+-- 5) VERIFICACIÓN FINAL
+-- ============================================================
+SELECT 'Conteo' AS Tabla, COUNT(*) AS Filas FROM dbo.Conteo;
+SELECT 'DetalleConteo' AS Tabla, COUNT(*) AS Filas FROM dbo.DetalleConteo;
+SELECT 'Inventario (Conservado)' AS Tabla, COUNT(*) AS Filas FROM dbo.Inventario;
+SELECT 'Productos (Conservado)' AS Tabla, COUNT(*) AS Filas FROM dbo.Productos;
+SELECT 'Usuarios (Conservado)' AS Tabla, COUNT(*) AS Filas FROM dbo.Usuarios;
+SELECT 'Roles (Conservado)' AS Tabla, COUNT(*) AS Filas FROM dbo.Roles;
+SELECT 'EstadosProceso (Conservado)' AS Tabla, COUNT(*) AS Filas FROM dbo.EstadosProceso;
+
+PRINT 'Limpieza completada. Inventario, Estados y Maestros conservados.';

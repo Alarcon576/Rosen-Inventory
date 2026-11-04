@@ -1,0 +1,23 @@
+
+# Gradle
+/.gradle/
+
+# Capturas
+/captures/
+
+# Gradle Wrapper - NECESARIOS PARA COMPILAR
+# gradle-wrapper.jar
+# /gradlew
+# /gradlew.bat
+
+# Configuración local
+/local.properties
+
+# Archivos generados
+GeneratedPluginRegistrant.java
+.cxx/
+
+# Seguridad: nunca subir certificados ni contraseñas
+key.properties
+**/*.keystore
+**/*.jks

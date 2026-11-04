@@ -1,0 +1,22 @@
+# BACKEND - NODE.JS
+Backend/node_modules/
+Backend/.env
+Backend/.env.*
+Backend/dist/
+Backend/coverage/
+
+# FRONTEND - FLUTTER
+conteo_inventario/build/
+conteo_inventario/.dart_tool/
+conteo_inventario/.idea/
+conteo_inventario/android/.gradle/
+conteo_inventario/android/local.properties/
+
+# EDITORES
+.vscode/
+.idea/
+
+# SISTEMA
+.DS_Store
+Thumbs.db
+desktop.ini
